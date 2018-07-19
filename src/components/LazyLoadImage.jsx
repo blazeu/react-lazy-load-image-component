@@ -4,8 +4,8 @@ import { PropTypes } from 'prop-types';
 
 import LazyLoadComponent from './LazyLoadComponent.jsx';
 
-let hasCache = () => {};
-let setCache = () => {};
+let hasCache = () => { };
+let setCache = () => { };
 
 if (typeof window !== 'undefined') {
   window.__imgCache = [];
@@ -88,8 +88,8 @@ class LazyLoadImage extends React.Component {
   }
 
   getWrappedLazyLoadImage(lazyLoadImage) {
-    const { effect, height, placeholderSrc,
-      width, wrapperClassName } = this.props;
+    const { effect, height, placeholderSrc = '',
+      width, wrapperClassName = '' } = this.props;
     const { loaded } = this.state;
 
     const loadedClassName = loaded ?
