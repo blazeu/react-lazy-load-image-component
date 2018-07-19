@@ -18,8 +18,10 @@ const trackWindowScroll = (BaseComponent) => {
 
       this.state = {
         scrollPosition: {
-          x: window.scrollX || window.pageXOffset,
-          y: window.scrollY || window.pageYOffset
+          x: typeof window === 'undefined' ?
+            0 : (window.scrollX || window.pageXOffset),
+          y: typeof window === 'undefined' ?
+            0 : (window.scrollY || window.pageYOffset)
         }
       };
     }

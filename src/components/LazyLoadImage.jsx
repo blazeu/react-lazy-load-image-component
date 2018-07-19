@@ -1,7 +1,22 @@
+/* eslint no-underscore-dangle: 0 */
 import React from 'react';
 import { PropTypes } from 'prop-types';
 
 import LazyLoadComponent from './LazyLoadComponent.jsx';
+
+let hasCache = () => {};
+let setCache = () => {};
+
+if (typeof window !== 'undefined') {
+  window.__imgCache = [];
+
+  hasCache = src =>
+    window.__imgCache.indexOf(src) > -1;
+
+  setCache = src =>
+    !hasCache(src) &&
+    window.__imgCache.push(src);
+}
 
 class LazyLoadImage extends React.Component {
   constructor(props) {
@@ -22,7 +37,7 @@ class LazyLoadImage extends React.Component {
 
       this.setState({
         loaded: true
-      });
+      }, () => setCache(this.props.src));
     };
   }
 
@@ -34,10 +49,25 @@ class LazyLoadImage extends React.Component {
     return <img onLoad={this.onImageLoad()} {...imgProps} />;
   }
 
+  getVisibleByDefault() {
+    const { src, visibleByDefault: visibleByDefaultProps } = this.props;
+    let visibleByDefault = false;
+
+    if (visibleByDefaultProps) {
+      visibleByDefault = visibleByDefaultProps;
+    } else if (hasCache(src)) {
+      visibleByDefault = true;
+    }
+
+    return visibleByDefault;
+  }
+
   getLazyLoadImage(image) {
     const { beforeLoad, className, delayMethod, delayTime,
       height, placeholder, scrollPosition, style, threshold,
-      visibleByDefault, width } = this.props;
+      width, src } = this.props;
+
+    const visibleByDefault = this.getVisibleByDefault();
 
     return (
       <LazyLoadComponent
@@ -84,8 +114,10 @@ class LazyLoadImage extends React.Component {
   }
 
   render() {
-    const { effect, placeholderSrc, visibleByDefault } = this.props;
+    const { effect, placeholderSrc } = this.props;
     const { loaded } = this.state;
+
+    const visibleByDefault = this.getVisibleByDefault();
 
     const image = this.getImg();
     const lazyLoadImage = loaded ?
